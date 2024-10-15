@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <transformation>
   <info>
-    <name>dim_location</name>
+    <name>dim_parish</name>
     <description/>
     <extended_description/>
     <trans_version/>
     <trans_type>Normal</trans_type>
-    <trans_status>0</trans_status>
     <directory>/</directory>
     <parameters>
     </parameters>
@@ -428,18 +427,86 @@
     <clusterschemas>
     </clusterschemas>
     <created_user>-</created_user>
-    <created_date>2024/10/14 02:23:47.372</created_date>
+    <created_date>2024/10/15 15:17:52.765</created_date>
     <modified_user>-</modified_user>
-    <modified_date>2024/10/14 02:23:47.372</modified_date>
+    <modified_date>2024/10/15 15:17:52.765</modified_date>
     <key_for_session_key/>
     <is_key_private>N</is_key_private>
   </info>
   <notepads>
   </notepads>
+  <connection>
+    <name>energy_dw</name>
+    <server>localhost</server>
+    <type>MYSQL</type>
+    <access>Native</access>
+    <database>energy_dw</database>
+    <port>3306</port>
+    <username>aid</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce10be93a6de</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute>
+        <code>EXTRA_OPTION_MYSQL.defaultFetchSize</code>
+        <attribute>500</attribute>
+      </attribute>
+      <attribute>
+        <code>EXTRA_OPTION_MYSQL.useCursorFetch</code>
+        <attribute>true</attribute>
+      </attribute>
+      <attribute>
+        <code>FORCE_IDENTIFIERS_TO_LOWERCASE</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>FORCE_IDENTIFIERS_TO_UPPERCASE</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>IS_CLUSTERED</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>PORT_NUMBER</code>
+        <attribute>3306</attribute>
+      </attribute>
+      <attribute>
+        <code>PRESERVE_RESERVED_WORD_CASE</code>
+        <attribute>Y</attribute>
+      </attribute>
+      <attribute>
+        <code>QUOTE_ALL_FIELDS</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>STREAM_RESULTS</code>
+        <attribute>Y</attribute>
+      </attribute>
+      <attribute>
+        <code>SUPPORTS_BOOLEAN_DATA_TYPE</code>
+        <attribute>Y</attribute>
+      </attribute>
+      <attribute>
+        <code>SUPPORTS_TIMESTAMP_DATA_TYPE</code>
+        <attribute>Y</attribute>
+      </attribute>
+      <attribute>
+        <code>USE_POOLING</code>
+        <attribute>N</attribute>
+      </attribute>
+    </attributes>
+  </connection>
   <order>
+    <hop>
+      <from>CSV file input</from>
+      <to>Insert / update</to>
+      <enabled>Y</enabled>
+    </hop>
   </order>
   <step>
-    <name>21-contadores-de-energia</name>
+    <name>CSV file input</name>
     <type>CsvInput</type>
     <description/>
     <distribute>Y</distribute>
@@ -449,7 +516,7 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <filename>/home/aid/Desktop/project-aid2024/21-contadores-de-energia.csv</filename>
+    <filename>/home/aid/Desktop/project-aid2024/dw/location_data.csv</filename>
     <filename_field/>
     <rownum_field/>
     <include_filename>N</include_filename>
@@ -457,46 +524,13 @@
     <enclosure>"</enclosure>
     <header>Y</header>
     <buffer_size>50000</buffer_size>
-    <lazy_conversion>N</lazy_conversion>
+    <lazy_conversion>Y</lazy_conversion>
     <add_filename_result>N</add_filename_result>
     <parallel>N</parallel>
     <newline_possible>N</newline_possible>
     <format>mixed</format>
     <encoding/>
     <fields>
-      <field>
-        <name>﻿Year</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>.</decimal>
-        <group>,</group>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-      </field>
-      <field>
-        <name>Month</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>.</decimal>
-        <group>,</group>
-        <length>15</length>
-        <precision>0</precision>
-        <trim_type>none</trim_type>
-      </field>
-      <field>
-        <name>Date</name>
-        <type>String</type>
-        <format/>
-        <currency>$</currency>
-        <decimal>.</decimal>
-        <group>,</group>
-        <length>7</length>
-        <precision>-1</precision>
-        <trim_type>none</trim_type>
-      </field>
       <field>
         <name>District</name>
         <type>String</type>
@@ -515,12 +549,12 @@
         <currency>$</currency>
         <decimal>.</decimal>
         <group>,</group>
-        <length>26</length>
+        <length>27</length>
         <precision>-1</precision>
         <trim_type>none</trim_type>
       </field>
       <field>
-        <name>Parish</name>
+        <name>parish</name>
         <type>String</type>
         <format/>
         <currency>$</currency>
@@ -528,28 +562,6 @@
         <group>,</group>
         <length>30</length>
         <precision>-1</precision>
-        <trim_type>none</trim_type>
-      </field>
-      <field>
-        <name>Includes Smart Meter</name>
-        <type>String</type>
-        <format/>
-        <currency>$</currency>
-        <decimal>.</decimal>
-        <group>,</group>
-        <length>3</length>
-        <precision>-1</precision>
-        <trim_type>none</trim_type>
-      </field>
-      <field>
-        <name>Number of CPE's</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency>$</currency>
-        <decimal>.</decimal>
-        <group>,</group>
-        <length>15</length>
-        <precision>0</precision>
         <trim_type>none</trim_type>
       </field>
       <field>
@@ -564,7 +576,7 @@
         <trim_type>none</trim_type>
       </field>
       <field>
-        <name>DistrictMunicipalityCode</name>
+        <name>MunicipalityCode</name>
         <type>Integer</type>
         <format>#</format>
         <currency>$</currency>
@@ -575,7 +587,7 @@
         <trim_type>none</trim_type>
       </field>
       <field>
-        <name>DistrictMunicipalityParishCode</name>
+        <name>ParishCode</name>
         <type>Integer</type>
         <format>#</format>
         <currency>$</currency>
@@ -583,17 +595,6 @@
         <group>,</group>
         <length>15</length>
         <precision>0</precision>
-        <trim_type>none</trim_type>
-      </field>
-      <field>
-        <name>Active Contract</name>
-        <type>String</type>
-        <format/>
-        <currency>$</currency>
-        <decimal>.</decimal>
-        <group>,</group>
-        <length>3</length>
-        <precision>-1</precision>
         <trim_type>none</trim_type>
       </field>
     </fields>
@@ -606,14 +607,14 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>192</xloc>
-      <yloc>64</yloc>
+      <xloc>224</xloc>
+      <yloc>208</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
   <step>
-    <name>3-consumos-faturados-por-municipio-ultimos-10-anos</name>
-    <type>CsvInput</type>
+    <name>Insert / update</name>
+    <type>InsertUpdate</type>
     <description/>
     <distribute>Y</distribute>
     <custom_distribution/>
@@ -622,22 +623,34 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <filename>/home/aid/Desktop/project-aid2024/3-consumos-faturados-por-municipio-ultimos-10-anos.csv</filename>
-    <filename_field/>
-    <rownum_field/>
-    <include_filename>N</include_filename>
-    <separator>,</separator>
-    <enclosure>"</enclosure>
-    <header>Y</header>
-    <buffer_size>50000</buffer_size>
-    <lazy_conversion>Y</lazy_conversion>
-    <add_filename_result>N</add_filename_result>
-    <parallel>N</parallel>
-    <newline_possible>N</newline_possible>
-    <format>mixed</format>
-    <encoding/>
-    <fields>
-    </fields>
+    <connection>energy_dw</connection>
+    <commit>100</commit>
+    <update_bypassed>N</update_bypassed>
+    <lookup>
+      <schema>energy_dw</schema>
+      <table>dim_parish</table>
+      <key>
+        <name>ParishCode</name>
+        <field>parish_id</field>
+        <condition>=</condition>
+        <name2/>
+      </key>
+      <value>
+        <name>parish_id</name>
+        <rename>ParishCode</rename>
+        <update>N</update>
+      </value>
+      <value>
+        <name>parish</name>
+        <rename>parish</rename>
+        <update>N</update>
+      </value>
+      <value>
+        <name>municipality_id</name>
+        <rename>MunicipalityCode</rename>
+        <update>N</update>
+      </value>
+    </lookup>
     <attributes/>
     <cluster_schema/>
     <remotesteps>
@@ -647,8 +660,8 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>192</xloc>
-      <yloc>176</yloc>
+      <xloc>368</xloc>
+      <yloc>208</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
