@@ -1,0 +1,36 @@
+<Schema name="energy_dw">
+  <Cube name="Contracts" visible="true" cache="true" enabled="true">
+    <Table name="fact_contract">
+    </Table>
+    <Dimension type="StandardDimension" visible="true" foreignKey="location_id" highCardinality="false" name="Location">
+      <Hierarchy name="Location Hierarchy" visible="true" hasAll="true" allMemberName="All Locations" primaryKey="location_id">
+        <Table name="dim_location">
+        </Table>
+        <Level name="Region" visible="true" column="region" type="String" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+        </Level>
+        <Level name="Municipality" visible="true" column="municipality" type="String" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+        </Level>
+        <Level name="Parish" visible="true" column="parish" type="String" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
+        </Level>
+      </Hierarchy>
+    </Dimension>
+    <Dimension type="TimeDimension" visible="true" foreignKey="time_id" highCardinality="false" name="Time">
+      <Hierarchy name="Time Hierarchy" visible="true" hasAll="true" allMemberName="All Years" primaryKey="time_id">
+        <Table name="dim_time">
+        </Table>
+        <Level name="Year" visible="true" column="year" ordinalColumn="year" type="Integer" uniqueMembers="false" levelType="TimeYears" hideMemberIf="Never">
+        </Level>
+        <Level name="Season order" visible="false" column="season_id" ordinalColumn="season_id" type="Integer" uniqueMembers="false" levelType="TimeQuarters" hideMemberIf="Never">
+        </Level>
+        <Level name="Season" visible="true" column="season" ordinalColumn="season_id" type="String" uniqueMembers="false" levelType="TimeQuarters">
+        </Level>
+        <Level name="Month" visible="true" column="month" ordinalColumn="month_id" type="String" uniqueMembers="false" levelType="TimeMonths" hideMemberIf="Never">
+        </Level>
+      </Hierarchy>
+    </Dimension>
+    <Measure name="Energy Consumption" column="energyconsumption" datatype="Numeric" formatString="#,###.00" aggregator="sum" visible="true">
+    </Measure>
+    <Measure name="Percentage Of Smart Meters" column="percentagesmartmeters" datatype="Numeric" formatString="0.00 %" aggregator="avg" visible="true">
+    </Measure>
+  </Cube>
+</Schema>

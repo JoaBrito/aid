@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <transformation>
   <info>
-    <name>location_data</name>
+    <name>dim_location</name>
     <description/>
     <extended_description/>
     <trans_version/>
@@ -436,6 +436,69 @@
   </info>
   <notepads>
   </notepads>
+  <connection>
+    <name>energy_dw</name>
+    <server>localhost</server>
+    <type>MYSQL</type>
+    <access>Native</access>
+    <database>energy_dw</database>
+    <port>3306</port>
+    <username>aid</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce10be93a6de</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute>
+        <code>EXTRA_OPTION_MYSQL.defaultFetchSize</code>
+        <attribute>500</attribute>
+      </attribute>
+      <attribute>
+        <code>EXTRA_OPTION_MYSQL.useCursorFetch</code>
+        <attribute>true</attribute>
+      </attribute>
+      <attribute>
+        <code>FORCE_IDENTIFIERS_TO_LOWERCASE</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>FORCE_IDENTIFIERS_TO_UPPERCASE</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>IS_CLUSTERED</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>PORT_NUMBER</code>
+        <attribute>3306</attribute>
+      </attribute>
+      <attribute>
+        <code>PRESERVE_RESERVED_WORD_CASE</code>
+        <attribute>Y</attribute>
+      </attribute>
+      <attribute>
+        <code>QUOTE_ALL_FIELDS</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>STREAM_RESULTS</code>
+        <attribute>Y</attribute>
+      </attribute>
+      <attribute>
+        <code>SUPPORTS_BOOLEAN_DATA_TYPE</code>
+        <attribute>Y</attribute>
+      </attribute>
+      <attribute>
+        <code>SUPPORTS_TIMESTAMP_DATA_TYPE</code>
+        <attribute>Y</attribute>
+      </attribute>
+      <attribute>
+        <code>USE_POOLING</code>
+        <attribute>N</attribute>
+      </attribute>
+    </attributes>
+  </connection>
   <order>
     <hop>
       <from>3-consumos-faturados-por-municipio-ultimos-10-anos</from>
@@ -463,23 +526,18 @@
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Group by 2</from>
-      <to>Stream lookup</to>
-      <enabled>Y</enabled>
-    </hop>
-    <hop>
       <from>Stream lookup</from>
       <to>Filter rows</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
       <from>Filter rows</from>
-      <to>Add sequence</to>
+      <to>Insert / update</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Add sequence</from>
-      <to>Text file output</to>
+      <from>Group by 2</from>
+      <to>Stream lookup</to>
       <enabled>Y</enabled>
     </hop>
   </order>
@@ -840,7 +898,7 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <send_true_to>Add sequence</send_true_to>
+    <send_true_to>Insert / update</send_true_to>
     <send_false_to/>
     <compare>
       <condition>
@@ -1051,6 +1109,56 @@
     </GUI>
   </step>
   <step>
+    <name>Stream lookup</name>
+    <type>StreamLookup</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <from>Group by 2</from>
+    <input_sorted>N</input_sorted>
+    <preserve_memory>Y</preserve_memory>
+    <sorted_list>N</sorted_list>
+    <integer_pair>N</integer_pair>
+    <lookup>
+      <key>
+        <name>District</name>
+        <field>District</field>
+      </key>
+      <key>
+        <name>Municipality</name>
+        <field>Municipality</field>
+      </key>
+      <key>
+        <name>parish</name>
+        <field>Parish</field>
+      </key>
+      <value>
+        <name>Parish</name>
+        <rename>Parish</rename>
+        <default/>
+        <type>None</type>
+      </value>
+    </lookup>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>624</xloc>
+      <yloc>128</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
     <name>Sort rows 2</name>
     <type>SortRows</type>
     <description/>
@@ -1109,8 +1217,8 @@
     </GUI>
   </step>
   <step>
-    <name>Stream lookup</name>
-    <type>StreamLookup</type>
+    <name>Insert / update</name>
+    <type>InsertUpdate</type>
     <description/>
     <distribute>Y</distribute>
     <custom_distribution/>
@@ -1119,29 +1227,37 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <from>Group by 2</from>
-    <input_sorted>N</input_sorted>
-    <preserve_memory>Y</preserve_memory>
-    <sorted_list>N</sorted_list>
-    <integer_pair>N</integer_pair>
+    <connection>energy_dw</connection>
+    <commit>100</commit>
+    <update_bypassed>N</update_bypassed>
     <lookup>
+      <schema>energy_dw</schema>
+      <table>dim_location</table>
       <key>
-        <name>District</name>
-        <field>District</field>
-      </key>
-      <key>
-        <name>Municipality</name>
-        <field>Municipality</field>
-      </key>
-      <key>
-        <name>parish</name>
-        <field>Parish</field>
+        <name>ParishCode</name>
+        <field>location_id</field>
+        <condition>=</condition>
+        <name2/>
       </key>
       <value>
-        <name>Parish</name>
-        <rename>Parish</rename>
-        <default/>
-        <type>None</type>
+        <name>location_id</name>
+        <rename>ParishCode</rename>
+        <update>N</update>
+      </value>
+      <value>
+        <name>parish</name>
+        <rename>parish</rename>
+        <update>N</update>
+      </value>
+      <value>
+        <name>region</name>
+        <rename>District</rename>
+        <update>N</update>
+      </value>
+      <value>
+        <name>municipality</name>
+        <rename>Municipality</rename>
+        <update>N</update>
       </value>
     </lookup>
     <attributes/>
@@ -1153,171 +1269,7 @@
       </output>
     </remotesteps>
     <GUI>
-      <xloc>624</xloc>
-      <yloc>128</yloc>
-      <draw>Y</draw>
-    </GUI>
-  </step>
-  <step>
-    <name>Text file output</name>
-    <type>TextFileOutput</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name/>
-    </partitioning>
-    <separator>;</separator>
-    <enclosure>"</enclosure>
-    <enclosure_forced>N</enclosure_forced>
-    <enclosure_fix_disabled>N</enclosure_fix_disabled>
-    <header>Y</header>
-    <footer>N</footer>
-    <format>DOS</format>
-    <compression>None</compression>
-    <encoding>UTF-8</encoding>
-    <endedLine/>
-    <fileNameInField>N</fileNameInField>
-    <fileNameField/>
-    <create_parent_folder>Y</create_parent_folder>
-    <file>
-      <name>/home/aid/Desktop/project-aid2024/dw/location_data</name>
-      <servlet_output>N</servlet_output>
-      <do_not_open_new_file_init>N</do_not_open_new_file_init>
-      <extention>csv</extention>
-      <append>N</append>
-      <split>N</split>
-      <haspartno>N</haspartno>
-      <add_date>N</add_date>
-      <add_time>N</add_time>
-      <SpecifyFormat>N</SpecifyFormat>
-      <date_time_format/>
-      <add_to_result_filenames>Y</add_to_result_filenames>
-      <pad>N</pad>
-      <fast_dump>N</fast_dump>
-      <splitevery/>
-    </file>
-    <fields>
-      <field>
-        <name>District</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif/>
-        <trim_type>none</trim_type>
-        <length>16</length>
-        <precision>-1</precision>
-      </field>
-      <field>
-        <name>Municipality</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif/>
-        <trim_type>none</trim_type>
-        <length>27</length>
-        <precision>-1</precision>
-      </field>
-      <field>
-        <name>parish</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif/>
-        <trim_type>none</trim_type>
-        <length>30</length>
-        <precision>-1</precision>
-      </field>
-      <field>
-        <name>DistrictCode</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency/>
-        <decimal>.</decimal>
-        <group>,</group>
-        <nullif/>
-        <trim_type>none</trim_type>
-        <length>-1</length>
-        <precision>0</precision>
-      </field>
-      <field>
-        <name>MunicipalityCode</name>
-        <type>Integer</type>
-        <format>#</format>
-        <currency/>
-        <decimal>.</decimal>
-        <group>,</group>
-        <nullif/>
-        <trim_type>none</trim_type>
-        <length>-1</length>
-        <precision>0</precision>
-      </field>
-      <field>
-        <name>parishCode_1</name>
-        <type>None</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <nullif/>
-        <trim_type>none</trim_type>
-        <length>-1</length>
-        <precision>-1</precision>
-      </field>
-    </fields>
-    <attributes/>
-    <cluster_schema/>
-    <remotesteps>
-      <input>
-      </input>
-      <output>
-      </output>
-    </remotesteps>
-    <GUI>
-      <xloc>960</xloc>
-      <yloc>128</yloc>
-      <draw>Y</draw>
-    </GUI>
-  </step>
-  <step>
-    <name>Add sequence</name>
-    <type>Sequence</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name/>
-    </partitioning>
-    <valuename>parishCode</valuename>
-    <use_database>N</use_database>
-    <connection/>
-    <schema/>
-    <seqname>SEQ_</seqname>
-    <use_counter>Y</use_counter>
-    <counter_name/>
-    <start_at>1</start_at>
-    <increment_by>1</increment_by>
-    <max_value>999999999</max_value>
-    <attributes/>
-    <cluster_schema/>
-    <remotesteps>
-      <input>
-      </input>
-      <output>
-      </output>
-    </remotesteps>
-    <GUI>
-      <xloc>832</xloc>
+      <xloc>848</xloc>
       <yloc>128</yloc>
       <draw>Y</draw>
     </GUI>
