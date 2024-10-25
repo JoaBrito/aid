@@ -1,0 +1,10 @@
+WITH MEMBER Measures.[NoOfMonthsWithData] AS Filter(Descendants(Time.Year.CurrentMember, Time.Month, SELF), NOT (Measures.[Energy Consumption] IS EMPTY AND Measures.[Percentage of snart meters] IS EMPTY)).Count
+    MEMBER Measures.[Previous Season Consumption] AS (Measures.[Energy Consumption], PARALLELPERIOD(Time.Season, 1, Time.CurrentMember))
+    MEMBER Measures.[Consumption Delta] AS Measures.[Energy Consumption] - Measures.[Previous Season Consumption]
+Select  CROSSJOIN(Descendants(FILTER(Time.Year.Members, Measures.[NoOfMonthsWithData] = 12), Time.Season, self),
+        {Measures.[Energy Consumption],
+        Measures.[Previous Season Consumption],
+        Measures.[Consumption Delta]}) ON COLUMNS,
+    Location.Region.Members ON ROWS
+FROM 
+    Contracts

@@ -1,0 +1,14 @@
+WITH MEMBER Measures.[NoOfMonthsWithData] AS Filter(Descendants(Time.Year.CurrentMember, Time.Month, SELF), NOT (Measures.[Energy Consumption] IS EMPTY AND Measures.[Percentage of snart meters] IS EMPTY)).Count
+    MEMBER Measures.[Previous Year Consumption] AS (Measures.[Energy Consumption], PARALLELPERIOD(Time.Year, 1, Time.CurrentMember))
+    MEMBER Measures.[Consumption Delta] AS Measures.[Energy Consumption] - Measures.[Previous Year Consumption]
+    MEMBER Measures.[Previous Year Percentage] AS (Measures.[Percentage of smart meters], PARALLELPERIOD(Time.Year, 1, Time.CurrentMember))
+    MEMBER Measures.[Percentage Delta] AS Measures.[Percentage of smart meters] - Measures.[Previous Year Percentage]
+Select  {Measures.[Energy Consumption],
+        Measures.[Previous Year Consumption],
+        Measures.[Consumption Delta],
+        Measures.[Percentage of smart meters],
+        Measures.[Previous Year Percentage],
+        Measures.[Percentage Delta]} ON COLUMNS,
+    FILTER(Crossjoin(Time.Year.Members, Location.Region.Members), Measures.NoOfMonthsWithData = 12) ON ROWS
+FROM 
+    Contracts

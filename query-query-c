@@ -1,0 +1,9 @@
+WITH MEMBER Measures.[NoOfMonthsWithData] AS Filter(Descendants(Time.Year.CurrentMember, Time.Month, SELF), NOT (Measures.[Energy Consumption] IS EMPTY AND Measures.[Percentage of snart meters] IS EMPTY)).Count
+    MEMBER Measures.[Correlation Percentage Consumption] AS Correlation(Time.Year.Members, Measures.[Energy Consumption], Measures.[Percentage of smart meters])
+Select  CROSSJOIN(FILTER(Time.Year.Members, Measures.[NoOfMonthsWithData] = 12),
+        {Measures.[Energy Consumption],
+        Measures.[Percentage of smart meters],
+        Measures.[Correlation Percentage Consumption]}) ON COLUMNS,
+    Location.Region.Members ON ROWS
+FROM 
+    Contracts

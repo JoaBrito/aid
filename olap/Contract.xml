@@ -20,9 +20,7 @@
         </Table>
         <Level name="Year" visible="true" column="year" ordinalColumn="year" type="Integer" uniqueMembers="false" levelType="TimeYears" hideMemberIf="Never">
         </Level>
-        <Level name="Season order" visible="false" column="season_id" ordinalColumn="season_id" type="Integer" uniqueMembers="false" levelType="TimeQuarters" hideMemberIf="Never">
-        </Level>
-        <Level name="Season" visible="true" column="season" ordinalColumn="season_id" type="String" uniqueMembers="false" levelType="TimeQuarters">
+        <Level name="Season" visible="true" column="season" ordinalColumn="season_id" type="String" uniqueMembers="false" levelType="TimeQuarters" hideMemberIf="Never">
         </Level>
         <Level name="Month" visible="true" column="month" ordinalColumn="month_id" type="String" uniqueMembers="false" levelType="TimeMonths" hideMemberIf="Never">
         </Level>
@@ -30,7 +28,11 @@
     </Dimension>
     <Measure name="Energy Consumption" column="energyconsumption" datatype="Numeric" formatString="#,###.00" aggregator="sum" visible="true">
     </Measure>
-    <Measure name="Percentage Of Smart Meters" column="percentagesmartmeters" datatype="Numeric" formatString="0.00 %" aggregator="avg" visible="true">
+    <Measure name="Total of Contracts" column="nocontracts" datatype="Integer" formatString="#,###" aggregator="sum" visible="false">
     </Measure>
+    <Measure name="Total of Smart Meters" column="nosmartmeters" datatype="Integer" formatString="#,###" aggregator="sum" visible="false">
+    </Measure>
+    <CalculatedMember name="Percentage of smart meters" formatString="0.00 %" formula="Measures.[Total of Smart Meters] / Measures.[Total of Contracts]" dimension="Measures" visible="true">
+    </CalculatedMember>
   </Cube>
 </Schema>
